@@ -1,6 +1,7 @@
 import Section from './Section';
 import ContactForm from "./ContactForm";
 import React, { Component } from 'react';
+import ContactList from './ContactList';
 
 
 class App extends Component {
@@ -17,9 +18,16 @@ class App extends Component {
  
   formSubmitHadler = data => {
   console.log(data);
-}
+  }
+  
+  deleteContact = (contactId) => {
+    this.setState(prevState => ({
+      contacts:prevState.contacts.filter(contact => contact.id !== contactId),
+    }))
+  }
 
   render() {
+    const { contacts } = this.state;
     return (
       <div>
         <Section text={'Phonebook'} />
@@ -27,6 +35,7 @@ class App extends Component {
 
 
         <Section text={'Contacts'} />
+        <ContactList contacts={contacts} onDeleteContact={this.deleteContact} />
       </div>
     );
   }
