@@ -3,6 +3,8 @@ import ContactForm from "./ContactForm";
 import React, { Component } from 'react';
 import ContactList from './ContactList';
 import { nanoid } from 'nanoid';
+import Filter from './Filter';
+import Notiflix from 'notiflix';
 
 
 class App extends Component {
@@ -31,9 +33,9 @@ class App extends Component {
         contact => contact.name.toLowerCase() === name.toLowerCase(),
       )
     ) {
-      alert(`${name} is already in contacts.`);
+      Notiflix.Notify.warning(`${name} is already in contacts.`);
     } else if (contacts.find(contact => contact.number === number)) {
-      alert(`${number} is already in contacts.`);
+      Notiflix.Notify.warning(`${number} is already in contacts.`);
     } else {
       this.setState(({ contacts }) => ({
         contacts: [contact, ...contacts],
@@ -48,16 +50,26 @@ class App extends Component {
     }))
   }
 
+  changeFilter = (e) => {
+    this.setState({filter:e.currentTarget.value})
+  }
+
   render() {
-    const { contacts } = this.state;
+    const { filter,contacts } = this.state;
+    const normalizedFilter = this.state.filter.toLowerCase();
+    const filterContacts = this.state.contacts.filter(contact=>contact.name.toLowerCase().includes(normalizedFilter))
     return (
       <div>
         <Section text={'Phonebook'} />
-        <ContactForm onSubmit={this.addContact } />
-
+        <ContactForm onSubmit={this.addContact} />
+       <Filter value={filter} onChange={this.changeFilter} />
 
         <Section text={'Contacts'} />
-        <ContactList contacts={contacts} onDeleteContact={this.deleteContact} />
+        {contacts.length > 0 ?
+          (<ContactList contacts={filterContacts} onDeleteContact={this.deleteContact} />) : (Notiflix.Notify.info("Your phonebook is empty. Please add contact."))
+        }
+
+      
       </div>
     );
   }
